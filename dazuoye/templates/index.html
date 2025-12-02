@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务器监控系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .card {
+            padding: 30px;
+        }
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            font-size: 1.5em;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            outline: none;
+        }
+        button {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        .host-list {
+            margin-top: 20px;
+        }
+        .host-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        .host-item:hover {
+            border-color: #3498db;
+            transform: translateX(5px);
+        }
+        .host-info {
+            flex-grow: 1;
+        }
+        .host-info strong {
+            color: #2c3e50;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .host-details {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .delete-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        .navigation {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #ecf0f1;
+        }
+        .nav-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        .empty-state p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖥️ 服务器监控系统</h1>
+            <p>自动化运维监控平台</p>
+        </div>
+        
+        <div class="card">
+            <h2>➕ 添加被监控主机</h2>
+            <form id="addHostForm">
+                <div class="form-group">
+                    <label for="ip">🔗 IP地址:</label>
+                    <input type="text" id="ip" name="ip" required placeholder="例如: 192.168.1.100 或 10.0.0.5">
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">👤 SSH用户名:</label>
+                    <input type="text" id="username" name="username" required placeholder="例如: root、ubuntu、admin">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">🔒 SSH密码:</label>
+                    <input type="password" id="password" name="password" required placeholder="请输入SSH登录密码">
+                </div>
+                
+                <div class="form-group">
+                    <label for="port">🌐 SSH端口:</label>
+                    <input type="number" id="port" name="port" value="22" min="1" max="65535" placeholder="默认SSH端口为22">
+                </div>
+                
+                <button type="submit">✅ 添加主机</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>📋 已监控的主机列表</h2>
+            <div class="host-list" id="hostList">
+                {% if hosts %}
+                    {% for host in hosts %}
+                    <div class="host-item" id="host-{{ host.ip }}">
+                        <div class="host-info">
+                            <strong>📍 {{ host.hostname }}</strong>
+                            <span class="host-details">
+                                IP: {{ host.ip }} | 用户: {{ host.username }} | 端口: {{ host.port }}<br>
+                                添加时间: {{ host.added_time }}
+                            </span>
+                        </div>
+                        <button class="delete-btn" onclick="deleteHost('{{ host.ip }}')">🗑️ 删除</button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <p>📭 暂无监控主机</p>
+                        <p>请在上方添加您要监控的服务器</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="/dashboard" class="nav-btn">📊 查看实时监控大屏</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('addHostForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            // 显示加载状态
+            submitBtn.textContent = '⏳ 添加中...';
+            submitBtn.disabled = true;
+            
+            try {
+                const formData = new FormData(this);
+                const response = await fetch('/add_host', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ 主机添加成功！');
+                    // 清空表单
+                    this.reset();
+                    // 重新加载页面以显示新主机
+                    location.reload();
+                } else {
+                    alert('❌ 添加失败: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ 网络错误: ' + error);
+            } finally {
+                // 恢复按钮状态
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        async function deleteHost(ip) {
+            if (confirm(`确定要删除主机 ${ip} 吗？此操作不可撤销。`)) {
+                try {
+                    const response = await fetch('/delete_host/' + encodeURIComponent(ip), {
+                        method: 'POST'
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('✅ 主机删除成功！');
+                        // 移除对应的主机元素
+                        const hostElement = document.getElementById('host-' + ip);
+                        if (hostElement) {
+                            hostElement.remove();
+                        }
+                        // 如果所有主机都被删除，显示空状态
+                        if (document.querySelectorAll('.host-item').length === 0) {
+                            location.reload();
+                        }
+                    } else {
+                        alert('❌ 删除失败: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('❌ 网络错误: ' + error);
+                }
+            }
+        }
+
+        // 添加输入验证
+        document.getElementById('ip').addEventListener('input', function(e) {
+            const ip = e.target.value;
+            // 简单的IP格式验证
+            if (ip && !/^(\d{1,3}\.){3}\d{1,3}$/.test(ip)) {
+                this.style.borderColor = '#e74c3c';
+            } else {
+                this.style.borderColor = '#bdc3c7';
+            }
+        });
+    </script>
+</body>
+</html>

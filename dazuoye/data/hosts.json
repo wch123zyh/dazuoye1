@@ -1,0 +1,26 @@
+[
+    {
+        "ip": "192.168.132.140",
+        "username": "root",
+        "password": "123456",
+        "port": 22,
+        "hostname": "host-192-168-132-140",
+        "added_time": "2025-12-01 06:54:50"
+    },
+    {
+        "ip": "192.168.229.130",
+        "username": "root",
+        "password": "123456",
+        "port": 22,
+        "hostname": "host-192-168-229-130",
+        "added_time": "2025-12-01 07:28:21"
+    },
+    {
+        "ip": "192.168.229.129",
+        "username": "root",
+        "password": "123456",
+        "port": 22,
+        "hostname": "host-192-168-229-129",
+        "added_time": "2025-12-01 07:28:32"
+    }
+]
